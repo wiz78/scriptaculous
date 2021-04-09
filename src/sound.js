@@ -38,10 +38,7 @@ Sound = {
 
     options.id = this.tracks[options.track].id;
     $$('body')[0].insert(
-      Prototype.Browser.IE ? new Element('bgsound',{
-        id: 'sound_'+options.track+'_'+options.id,
-        src: options.url, loop: 1, autostart: true
-      }) : Sound.template.evaluate(options));
+      Sound.template.evaluate(options));
   }
 };
 

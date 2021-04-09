@@ -106,7 +106,6 @@ var Effect = {
   },
   tagifyText: function(element) {
     var tagifyStyle = 'position:relative';
-    if (Prototype.Browser.IE) tagifyStyle += ';zoom:1';
 
     element = $(element);
     $A(element.childNodes).each( function(child) {
@@ -348,9 +347,6 @@ Effect.Opacity = Class.create(Effect.Base, {
   initialize: function(element) {
     this.element = $(element);
     if (!this.element) throw(Effect._elementDoesNotExistError);
-    // make this work on IE on elements without 'layout'
-    if (Prototype.Browser.IE && (!this.element.currentStyle.hasLayout))
-      this.element.setStyle({zoom: 1});
     var options = Object.extend({
       from: this.element.getOpacity() || 0.0,
       to:   1.0
@@ -957,8 +953,6 @@ Effect.Morph = Class.create(Effect.Base, {
         unit  = 'color';
       } else if (property == 'opacity') {
         value = parseFloat(value);
-        if (Prototype.Browser.IE && (!this.element.currentStyle.hasLayout))
-          this.element.setStyle({zoom: 1});
       } else if (Element.CSS_LENGTH.test(value)) {
           var components = value.match(/^([\+\-]?[0-9\.]+)(.*)$/);
           value = parseFloat(components[1]);
@@ -1056,9 +1050,6 @@ String.prototype.parseStyle = function(){
   Element.CSS_PROPERTIES.each(function(property){
     if (style[property]) styleRules.set(property, style[property]);
   });
-
-  if (Prototype.Browser.IE && this.include('opacity'))
-    styleRules.set('opacity', this.match(/opacity:\s*((?:0|1)?(?:\.\d*)?)/)[1]);
 
   return styleRules;
 };
