@@ -26,8 +26,7 @@ PKG_FILES = FileList[
   'lib/prototype.js',
   'test/**/*.html',
   'test/**/*.css',
-  'test/**/*.png',
-  'test/**/*.mp3'
+  'test/**/*.png'
 ]
 
 SRC_FILES = FileList[
@@ -36,9 +35,7 @@ SRC_FILES = FileList[
   'src/effects.js',
   'src/controls.js',
   'src/unittest.js',
-  'src/builder.js',
   'src/slider.js',
-  'src/sound.js',
   'src/unittest.js'
 ]
 
@@ -94,7 +91,6 @@ JavaScriptTestTask.new(:unittest) do |t|
   t.run("/test/unit/ajax_inplaceeditor_test.html")
   t.run("/test/unit/slider_test.html")
   t.run("/test/unit/string_test.html")
-  t.run("/test/unit/builder_test.html")
   t.run("/test/unit/element_test.html")
   t.run("/test/unit/dragdrop_test.html")
   t.run("/test/unit/sortable_test.html")

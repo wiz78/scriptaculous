@@ -120,7 +120,7 @@
       Position.prepare();
       assert(!Droppables.isAffected([-10, -10], null, Droppables.drops[0]));
       
-      var p = Position.page($('droppable_test'));
+      var p = Element.Methods.viewportOffset($('droppable_test'));
       assert(Droppables.isAffected(p, null, Droppables.drops[0]));
     }}
     
