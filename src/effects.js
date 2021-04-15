@@ -563,7 +563,7 @@ Effect.Puff = function(element) {
      new Effect.Opacity(element, { sync: true, to: 0.0 } ) ],
      Object.extend({ duration: 1.0,
       beforeSetupInternal: function(effect) {
-        Position.absolutize(effect.effects[0].element);
+        Element.absolutize(effect.effects[0].element);
       },
       afterFinishInternal: function(effect) {
          effect.effects[0].element.hide().setStyle(oldStyle); }

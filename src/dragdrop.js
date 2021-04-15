@@ -6,6 +6,60 @@
 if(Object.isUndefined(Effect))
   throw("dragdrop.js requires including script.aculo.us' effects.js library");
 
+var Position = {
+
+  // must be called before calling withinIncludingScrolloffset, every time the
+  // page is scrolled
+  prepare: function() {
+    this.deltaX =  window.pageXOffset
+                || document.documentElement.scrollLeft
+                || document.body.scrollLeft
+                || 0;
+    this.deltaY =  window.pageYOffset
+                || document.documentElement.scrollTop
+                || document.body.scrollTop
+                || 0;
+  },
+
+  // caches x/y coordinate pair to use with overlap
+  within: function(element, x, y) {
+    if (this.includeScrollOffsets)
+      return this.withinIncludingScrolloffsets(element, x, y);
+    this.xcomp = x;
+    this.ycomp = y;
+    this.offset = Element.cumulativeOffset(element);
+
+    return (y >= this.offset[1] &&
+            y <  this.offset[1] + element.offsetHeight &&
+            x >= this.offset[0] &&
+            x <  this.offset[0] + element.offsetWidth);
+  },
+
+  withinIncludingScrolloffsets: function(element, x, y) {
+    var offsetcache = Element.cumulativeScrollOffset(element);
+
+    this.xcomp = x + offsetcache[0] - this.deltaX;
+    this.ycomp = y + offsetcache[1] - this.deltaY;
+    this.offset = Element.cumulativeOffset(element);
+
+    return (this.ycomp >= this.offset[1] &&
+            this.ycomp <  this.offset[1] + element.offsetHeight &&
+            this.xcomp >= this.offset[0] &&
+            this.xcomp <  this.offset[0] + element.offsetWidth);
+  },
+
+  // within must be called directly before
+  overlap: function(mode, element) {
+    if (!mode) return 0;
+    if (mode == 'vertical')
+      return ((this.offset[1] + element.offsetHeight) - this.ycomp) /
+        element.offsetHeight;
+    if (mode == 'horizontal')
+      return ((this.offset[0] + element.offsetWidth) - this.xcomp) /
+        element.offsetWidth;
+  }
+};
+
 var Droppables = {
   drops: [],
 
@@ -332,7 +386,7 @@ var Draggable = Class.create({
       this._clone = this.element.cloneNode(true);
       this._originallyAbsolute = (this.element.getStyle('position') == 'absolute');
       if (!this._originallyAbsolute)
-        Position.absolutize(this.element);
+        Element.absolutize(this.element);
       this.element.parentNode.insertBefore(this._clone, this.element);
     }
 
@@ -372,7 +426,7 @@ var Draggable = Class.create({
       if (this.options.scroll == window) {
         with(this._getWindowScroll(this.options.scroll)) { p = [ left, top, left+width, top+height ]; }
       } else {
-        p = Position.page(this.options.scroll).toArray();
+        p = Element.Methods.viewportOffset(this.options.scroll).toArray();
         p[0] += this.options.scroll.scrollLeft + Position.deltaX;
         p[1] += this.options.scroll.scrollTop + Position.deltaY;
         p.push(p[0]+this.options.scroll.offsetWidth);
@@ -403,7 +457,7 @@ var Draggable = Class.create({
 
     if(this.options.ghosting) {
       if (!this._originallyAbsolute)
-        Position.relativize(this.element);
+        Element.relativize(this.element);
       delete this._originallyAbsolute;
       Element.remove(this._clone);
       this._clone = null;
@@ -455,7 +509,7 @@ var Draggable = Class.create({
   draw: function(point) {
     var pos = this.element.cumulativeOffset();
     if(this.options.ghosting) {
-      var r   = Position.realOffset(this.element);
+      var r   = Element.Methods.cumulativeScrollOffset(this.element);
       pos[0] += r[0] - Position.deltaX; pos[1] += r[1] - Position.deltaY;
     }
 
